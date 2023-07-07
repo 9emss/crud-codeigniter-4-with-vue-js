@@ -32,12 +32,11 @@ async function getPostData() {
         Credentials: 'include'
     })
         .then(response => {
-            console.log(response)
             title.value = response.data.data.title
             description.value = response.data.data.description
-            console.log(response.data)
+            // console.log(response.data)
         }).catch(err => {
-            console.log(err)
+            // console.log(err)
             errors.value = "Error, while fetching!"
         }).finally(() => {
             isFetching.value = false
