@@ -37,7 +37,6 @@ async function storePost() {
         router.push({ path: "/post" })
     }).catch(error => {
         // assign response error data to state "errors"
-        console.log(error.response.data.messages)
         errors.value = error.response.data.messages
     })
 }

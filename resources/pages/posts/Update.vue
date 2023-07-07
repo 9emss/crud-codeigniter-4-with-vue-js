@@ -2,10 +2,12 @@
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import api from '../../api'
+import '../../api'
 
 // init router
 const router = useRouter()
+
+const token = localStorage.getItem('token')
 
 // init route
 const route = useRoute()
@@ -22,13 +24,21 @@ async function getPostData() {
     isFetching.value = true
 
     // fetch detail data post by post ID
-    await api.get(`api/post/${route.params.id}`)
+    await axios.get(`api/post/${route.params.id}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        Credentials: 'include'
+    })
         .then(response => {
+            console.log(response)
             title.value = response.data.data.title
             description.value = response.data.data.description
             console.log(response.data)
         }).catch(err => {
-            posts.value = "Error, while fetching!"
+            console.log(err)
+            errors.value = "Error, while fetching!"
         }).finally(() => {
             isFetching.value = false
         })
@@ -51,10 +61,12 @@ async function updatePost() {
     formData.append('description', description.value)
     // formData.append('_method', 'PUT')
 
-    api.put(`api/post/${route.params.id}`, formData, {
+    await axios.put(`api/post/${route.params.id}`, formData, {
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
         },
+        Credentials: 'include'
     })
         .then(() => {
             router.push({
