@@ -3,7 +3,7 @@ module.exports = {
   content: [
     "./node_modules/flowbite/**/*.js",
     './index.html',
-    './resources/***/**/*.{vue,js,ts,jsx,tsx}'
+    './resources/**/*.{vue,js,ts,jsx,tsx}'
   ],
   theme: {
     extend: {},

@@ -32,10 +32,16 @@ class PostsController extends ResourceController
      */
     public function show($id = null)
     {
+
+        $data = $this->model->find($id);
+
+        if (!$data)
+            return $this->failNotFound('Post nof found!');
+
         return $this->respond([
             'statusCode' => 200,
             'message' => 'OK',
-            'data' => $this->model->find($id)
+            'data' => $data
         ], 200);
     }
 
@@ -46,6 +52,16 @@ class PostsController extends ResourceController
      */
     public function create()
     {
+
+        // validation
+        $validation = $this->validate([
+            'title' => 'required|alpha_numeric_space',
+            'description' => 'required'
+        ]);
+
+        if (!$validation)
+            return $this->failValidationErrors($this->validator->getErrors());
+
         if ($this->request) {
             // get request from vue js
             if ($this->request->getJSON()) {
@@ -75,6 +91,8 @@ class PostsController extends ResourceController
                 'message' => 'Data have been saved!'
             ], 201);
         }
+
+        return $this->fail('Error Post not created!');
     }
 
     /**

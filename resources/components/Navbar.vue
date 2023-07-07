@@ -1,3 +1,31 @@
+<script setup>
+import { hasOwn } from '@vue/shared';
+import axios from 'axios';
+import { useRouter } from 'vue-router';
+import { defineProps, withDefaults } from 'vue';
+
+
+const router = useRouter()
+
+const token = localStorage.getItem('token')
+
+async function logout() {
+
+    await axios.get('auth/logout')
+        .then(response => {
+            console.log(response)
+
+            localStorage.clear('token')
+            router.push({
+                path: '/'
+            })
+            location.reload()
+        })
+
+}
+
+</script>
+
 <template>
     <!-- <nav class="py-4 border-b border-primary-500">
         <div class="container">
@@ -42,15 +70,38 @@
                             Home</RouterLink>
 
                     </li>
-                    <li>
+                    <li v-if="token">
                         <RouterLink to="/post"
                             class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">
                             Posts</RouterLink>
 
                     </li>
 
+                    <li>
+                        <RouterLink to="/about"
+                            class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">
+                            About</RouterLink>
+
+                    </li>
+
+                    <li v-if="!token">
+                        <RouterLink to="/auth"
+                            class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">
+                            Log In</RouterLink>
+
+                    </li>
+
+                    <li v-if="token">
+                        <a @click="logout"
+                            class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">
+                            Logout</a>
+
+                    </li>
+
+
                 </ul>
             </div>
         </div>
     </nav>
 </template>
+

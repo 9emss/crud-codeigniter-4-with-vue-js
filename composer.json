@@ -8,7 +8,9 @@
         "php": "^7.4 || ^8.0",
         "codeigniter4/framework": "^4.0",
         "mihatori/codeignitervite": "^1.0",
-        "agungsugiarto/codeigniter4-cors": "^3.0"
+        "agungsugiarto/codeigniter4-cors": "^3.0",
+        "codeigniter4/shield": "^1.0@beta",
+        "firebase/php-jwt": "^6.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9",
@@ -33,5 +35,7 @@
     },
     "support": {
         "source": "https://github.com/firtadokei/ci-vue-appstarter"
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

@@ -39,11 +39,19 @@ $routes->get('/', 'Home::index');
 
 $routes->get('info', 'Home::getInfo');
 
+$routes->get('refresh', 'API\Auth\LoginController::refreshToken');
+
 // $routes->post('update-post/$1', 'API\PostsController::update/$1', ['filters' => 'cors']);
+$routes->post('auth/jwt', 'API\Auth\LoginController::jwtLogin');
+$routes->get('auth/logout', 'API\Auth\LoginController::logoutAction');
 
 $routes->group('api', function ($routes) {
     $routes->resource('post', ['controller' => 'API\PostsController']);
+    $routes->post('register', 'API\Auth\RegisterController::apiRegisterAction');
+    $routes->get('user', 'API\UserController::index');
 });
+
+service('auth')->routes($routes);
 
 /*
  * --------------------------------------------------------------------

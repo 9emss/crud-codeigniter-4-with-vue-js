@@ -1,65 +1,63 @@
 <script setup>
 
-import axios from 'axios';
-import { ref } from 'vue'
+import axios, { formToJSON } from 'axios';
+import { nextTick, ref, watchEffect } from 'vue';
+
 import { useRouter } from 'vue-router';
 
-// init router
 const router = useRouter()
 
-// define state
-const title = ref("")
-const description = ref("")
+const email = ref("")
+const password = ref("")
 const errors = ref([])
 
-const isFetching = ref(true)
+async function loginPost() {
 
-// get token from localStorage
-const token = localStorage.getItem('token')
-
-// store data with api
-async function storePost() {
-
-    // init formData
     let formData = new FormData()
 
-    formData.append("title", title.value)
-    formData.append("description", description.value)
+    formData.append("email", email.value)
+    formData.append("password", password.value)
 
-    await axios.post('api/post', formData, {
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        Credentials: 'include'
-    }).then(response => {
-        // redirect
-        router.push({ path: "/post" })
-    }).catch(error => {
-        // assign response error data to state "errors"
-        console.log(error.response.data.messages)
-        errors.value = error.response.data.messages
+
+    const { data } = await axios.post('auth/jwt', formToJSON(formData), {
+        withCredentials: true,
     })
-}
+        .then((response) => {
+            const token = response.data.data.access_token
 
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+
+            localStorage.setItem('token', token)
+
+            router.replace({
+                path: '/post',
+            })
+                .then(() => {
+                    location.reload()
+                })
+
+        })
+
+    axios.defaults.headers.common['Authorization'] = `Bearer ${data.data.access_token}`
+
+}
 </script>
 
 <template>
-    <div class="container mb-5 mt-5 ml-5">
+    <div class="container mt-5 mb-5 px-10 py-10">
         <div class="row">
             <div class="col-md-12">
                 <div class="card border-0 rounded shadow">
                     <div class="card-body">
-
-                        <form @submit.prevent="storePost()" class="px-10 py-10">
+                        <form @submit.prevent="loginPost" class="px-10 py-10">
                             <div class="mb-6">
-                                <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your
-                                    title</label>
-                                <input type="text" id="title"
+                                <label for="email"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">email</label>
+                                <input type="email" id="email"
                                     class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
-                                    v-model="title" placeholder="Title Post..." required>
+                                    v-model="email" placeholder="email" required>
 
-                                <div v-if="errors.title"
+                                <div v-if="errors.email"
                                     class="flex p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400"
                                     role="alert">
                                     <svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-3" fill="currentColor"
@@ -75,14 +73,15 @@ async function storePost() {
                                     </div>
                                 </div>
                             </div>
-                            <div class="sm:col-span-2 mb-6">
-                                <label for="description"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                                <textarea id="description" rows="8"
-                                    class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                    v-model="description" placeholder="Your description here"></textarea>
 
-                                <div v-if="errors.description"
+                            <div class="mb-6">
+                                <label for="password"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                                <input type="password" id="password"
+                                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
+                                    v-model="password" placeholder="Password" required>
+
+                                <div v-if="errors.password"
                                     class="flex p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400"
                                     role="alert">
                                     <svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-3" fill="currentColor"
@@ -94,14 +93,14 @@ async function storePost() {
                                     <span class="sr-only">Info</span>
                                     <div>
                                         <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span
-                                                class="font-medium">Oops!</span> {{ errors.description }}</p>
+                                                class="font-medium">Oops!</span> {{ errors.title }}</p>
                                     </div>
                                 </div>
                             </div>
+
                             <button type="submit"
                                 class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add</button>
                         </form>
-
                     </div>
                 </div>
             </div>

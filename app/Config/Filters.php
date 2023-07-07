@@ -73,6 +73,12 @@ class Filters extends BaseConfig
         'cors' => [
             'before' => ['api/*'],
             'after' => ['api/*'],
+        ],
+        'jwt' => [
+            'before' => [
+                'api',
+                'api/*'
+            ]
         ]
     ];
 }

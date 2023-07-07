@@ -1,7 +1,3 @@
 import axios from "axios";
 
-const api = axios.create({
-    baseURL: "http://localhost:8080"
-})
-
-export default api
+axios.defaults.baseURL = 'http://192.168.1.7:81'
